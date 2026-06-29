@@ -11,7 +11,7 @@ import {
   Moon,
   Shield,
 } from "lucide-react";
-import { getSpace } from "@/data/spaces";
+import { getSpace, type Space } from "@/data/spaces";
 import { Header } from "@/components/manacrib/Header";
 
 export const Route = createFileRoute("/space/$id")({
@@ -75,7 +75,7 @@ const levelTone: Record<string, string> = {
 };
 
 function SpaceDetail() {
-  const { space } = Route.useLoaderData();
+  const { space } = Route.useLoaderData() as { space: Space };
   const [active, setActive] = useState(0);
   const [hours, setHours] = useState(3);
   const [players, setPlayers] = useState(4);
