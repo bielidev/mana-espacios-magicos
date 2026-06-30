@@ -14,9 +14,15 @@ export function Header() {
           </span>
         </Link>
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
-          <a className="hover:text-foreground" href="#explorar">Explorar</a>
-          <a className="hover:text-foreground" href="#como-funciona">Cómo funciona</a>
-          <a className="hover:text-foreground" href="#anfitriones">Para anfitriones</a>
+          <a className="hover:text-foreground" href="#explorar">
+            Explorar
+          </a>
+          <a className="hover:text-foreground" href="#como-funciona">
+            Cómo funciona
+          </a>
+          <a className="hover:text-foreground" href="#anfitriones">
+            Para anfitriones
+          </a>
         </nav>
         <div className="flex items-center gap-2">
           <button className="hidden rounded-full px-4 py-2 text-sm text-muted-foreground hover:text-foreground sm:inline-flex">

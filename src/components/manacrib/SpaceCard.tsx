@@ -42,9 +42,7 @@ export function SpaceCard({ space }: { space: Space }) {
       </div>
       <div className="space-y-2 p-4">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="font-display text-base leading-snug text-foreground">
-            {space.title}
-          </h3>
+          <h3 className="font-display text-base leading-snug text-foreground">{space.title}</h3>
           <span className="flex shrink-0 items-center gap-1 text-sm text-foreground">
             <Star className="h-3.5 w-3.5 fill-primary text-primary" />
             {space.rating}

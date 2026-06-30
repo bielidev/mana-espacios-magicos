@@ -11,14 +11,18 @@ import {
   Moon,
   Shield,
 } from "lucide-react";
-import { getSpace, type Space } from "@/data/spaces";
+import { fetchBoatBySlug } from "@/data/api";
+import type { Space } from "@/data/spaces";
 import { Header } from "@/components/manacrib/Header";
 
 export const Route = createFileRoute("/space/$id")({
-  loader: ({ params }) => {
-    const space = getSpace(params.id);
-    if (!space) throw notFound();
-    return { space };
+  loader: async ({ params }) => {
+    try {
+      const space = await fetchBoatBySlug(params.id);
+      return { space };
+    } catch {
+      throw notFound();
+    }
   },
   head: ({ loaderData }) => {
     const s = loaderData?.space;
@@ -81,9 +85,7 @@ function SpaceDetail() {
   const [players, setPlayers] = useState(4);
 
   const total =
-    space.priceUnit === "hora"
-      ? space.pricePerHour * hours
-      : space.pricePerPlayer * players;
+    space.priceUnit === "hora" ? space.pricePerHour * hours : space.pricePerPlayer * players;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -171,17 +173,27 @@ function SpaceDetail() {
         <div className="mt-10 grid gap-10 lg:grid-cols-[1.7fr_1fr]">
           <div className="space-y-10">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <Stat icon={<Users className="h-4 w-4" />} label="Jugadores" value={`Hasta ${space.capacityPlayers}`} />
+              <Stat
+                icon={<Users className="h-4 w-4" />}
+                label="Jugadores"
+                value={`Hasta ${space.capacityPlayers}`}
+              />
               <Stat icon={<Layers className="h-4 w-4" />} label="Mesas" value={`${space.tables}`} />
-              <Stat icon={<Moon className="h-4 w-4" />} label="Horario" value={space.open24h ? "24h" : "Tarde / noche"} />
-              <Stat icon={<Shield className="h-4 w-4" />} label="Niveles" value={space.levels.join(" · ")} />
+              <Stat
+                icon={<Moon className="h-4 w-4" />}
+                label="Horario"
+                value={space.open24h ? "24h" : "Tarde / noche"}
+              />
+              <Stat
+                icon={<Shield className="h-4 w-4" />}
+                label="Niveles"
+                value={space.levels.join(" · ")}
+              />
             </div>
 
             <div>
               <h2 className="font-display text-xl">Sobre este espacio</h2>
-              <p className="mt-3 leading-relaxed text-muted-foreground">
-                {space.description}
-              </p>
+              <p className="mt-3 leading-relaxed text-muted-foreground">{space.description}</p>
             </div>
 
             <div>
@@ -272,15 +284,7 @@ function SpaceDetail() {
   );
 }
 
-function Stat({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
+function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="rounded-xl border border-border/60 bg-card/40 p-3">
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -294,9 +298,7 @@ function Stat({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
-        {label}
-      </div>
+      <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
       {children}
     </label>
   );
