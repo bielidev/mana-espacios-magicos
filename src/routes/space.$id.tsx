@@ -10,10 +10,16 @@ import {
   Check,
   Moon,
   Shield,
+  Calendar,
+  Clock,
+  Mail,
+  User,
 } from "lucide-react";
+import { toast } from "sonner";
 import { fetchBoatBySlug } from "@/data/api";
 import type { Space } from "@/data/spaces";
 import { Header } from "@/components/manacrib/Header";
+import { createBooking } from "@/data/store";
 
 export const Route = createFileRoute("/space/$id")({
   loader: async ({ params }) => {
@@ -72,6 +78,15 @@ export const Route = createFileRoute("/space/$id")({
   ),
 });
 
+const TIME_SLOTS = [
+  "16:00 – 18:00",
+  "18:00 – 20:00",
+  "20:00 – 22:00",
+  "22:00 – 00:00",
+  "00:00 – 02:00",
+  "02:00 – 04:00",
+];
+
 const levelTone: Record<string, string> = {
   Casual: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
   Optimizado: "bg-amber-500/15 text-amber-300 border-amber-500/30",
@@ -83,9 +98,52 @@ function SpaceDetail() {
   const [active, setActive] = useState(0);
   const [hours, setHours] = useState(3);
   const [players, setPlayers] = useState(4);
+  const [date, setDate] = useState("");
+  const [timeSlot, setTimeSlot] = useState(TIME_SLOTS[3]);
+  const [guestName, setGuestName] = useState("");
+  const [guestEmail, setGuestEmail] = useState("");
+  const [booking, setBooking] = useState(false);
 
   const total =
     space.priceUnit === "hora" ? space.pricePerHour * hours : space.pricePerPlayer * players;
+
+  const minDate = new Date().toISOString().split("T")[0];
+
+  const handleBooking = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!guestName.trim() || !guestEmail.trim()) {
+      toast.error("Completa tu nombre y email");
+      return;
+    }
+    if (!date) {
+      toast.error("Selecciona una fecha");
+      return;
+    }
+    setBooking(true);
+    try {
+      createBooking({
+        spaceId: space.id,
+        spaceTitle: space.title,
+        spaceImage: space.image,
+        city: space.city,
+        date,
+        timeSlot,
+        hours,
+        players,
+        totalPrice: total,
+        guestName: guestName.trim(),
+        guestEmail: guestEmail.trim().toLowerCase(),
+      });
+      toast.success("¡Reserva confirmada! Recibirás un email en breve.");
+      setDate("");
+      setGuestName("");
+      setGuestEmail("");
+    } catch {
+      toast.error("Error al realizar la reserva");
+    } finally {
+      setBooking(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -150,11 +208,7 @@ function SpaceDetail() {
               <button
                 key={i}
                 onClick={() => setActive(i)}
-                className={`overflow-hidden rounded-xl border transition ${
-                  i === active
-                    ? "border-primary shadow-[var(--shadow-glow)]"
-                    : "border-border/60 opacity-80 hover:opacity-100"
-                }`}
+                className={`overflow-hidden rounded-xl border transition ${i === active ? "border-primary shadow-[var(--shadow-glow)]" : "border-border/60 opacity-80 hover:opacity-100"}`}
               >
                 <img
                   src={g}
@@ -216,7 +270,10 @@ function SpaceDetail() {
 
           {/* Booking card */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="overflow-hidden rounded-2xl border border-border/60 bg-card/60 p-6 shadow-[var(--shadow-card)] backdrop-blur">
+            <form
+              onSubmit={handleBooking}
+              className="overflow-hidden rounded-2xl border border-border/60 bg-card/60 p-6 shadow-[var(--shadow-card)] backdrop-blur"
+            >
               <div className="flex items-baseline gap-2">
                 <span className="font-display text-3xl text-primary">
                   {space.priceUnit === "hora" ? space.pricePerHour : space.pricePerPlayer}€
@@ -256,21 +313,92 @@ function SpaceDetail() {
                   </Field>
                 )}
 
+                {/* Date */}
+                <Field label="Fecha">
+                  <div className="flex items-center gap-2 rounded-xl border border-border/60 bg-background/60 px-3 py-2.5">
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <input
+                      type="date"
+                      value={date}
+                      min={minDate}
+                      onChange={(e) => setDate(e.target.value)}
+                      required
+                      className="w-full bg-transparent text-sm outline-none [color-scheme:dark]"
+                    />
+                  </div>
+                </Field>
+
+                {/* Time slot */}
+                <Field label="Franja horaria">
+                  <div className="flex items-center gap-2 rounded-xl border border-border/60 bg-background/60 px-3 py-2.5">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <select
+                      value={timeSlot}
+                      onChange={(e) => setTimeSlot(e.target.value)}
+                      className="w-full bg-transparent text-sm outline-none"
+                    >
+                      {TIME_SLOTS.map((t) => (
+                        <option key={t} value={t} className="bg-background">
+                          {t}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </Field>
+
+                {/* Guest name */}
+                <Field label="Tu nombre">
+                  <div className="flex items-center gap-2 rounded-xl border border-border/60 bg-background/60 px-3 py-2.5">
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    <input
+                      type="text"
+                      value={guestName}
+                      onChange={(e) => setGuestName(e.target.value)}
+                      placeholder="Ej: Carlos"
+                      required
+                      className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                    />
+                  </div>
+                </Field>
+
+                {/* Guest email */}
+                <Field label="Tu email">
+                  <div className="flex items-center gap-2 rounded-xl border border-border/60 bg-background/60 px-3 py-2.5">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <input
+                      type="email"
+                      value={guestEmail}
+                      onChange={(e) => setGuestEmail(e.target.value)}
+                      placeholder="tu@email.com"
+                      required
+                      className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                    />
+                  </div>
+                </Field>
+
                 <div className="flex items-center justify-between border-t border-border/60 pt-4">
                   <span className="text-sm text-muted-foreground">Total estimado</span>
                   <span className="font-display text-2xl text-foreground">{total}€</span>
                 </div>
 
-                <button className="w-full rounded-xl bg-[image:var(--gradient-gold)] py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-95">
-                  <span className="inline-flex items-center gap-2">
-                    <Sparkles className="h-4 w-4" /> Reservar
-                  </span>
+                <button
+                  type="submit"
+                  disabled={booking}
+                  className="w-full rounded-xl bg-[image:var(--gradient-gold)] py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-95 disabled:opacity-50"
+                >
+                  {booking ? (
+                    "Reservando…"
+                  ) : (
+                    <span className="inline-flex items-center gap-2">
+                      <Sparkles className="h-4 w-4" /> Reservar
+                    </span>
+                  )}
                 </button>
                 <p className="text-center text-[11px] text-muted-foreground">
                   Aún no se te cobrará nada. Confirmación en menos de 1h.
                 </p>
               </div>
-            </div>
+            </form>
           </aside>
         </div>
       </section>

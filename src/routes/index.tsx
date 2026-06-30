@@ -1,15 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Search, SlidersHorizontal, MapPin, Sparkles, Moon, Users } from "lucide-react";
 import heroImg from "@/assets/hero.jpg";
-import {
-  SPACES,
-  CITIES,
-  LEVELS,
-  AMENITY_FILTERS,
-  type Amenity,
-  type CompetitivenessLevel,
-} from "@/data/spaces";
+import { LEVELS, AMENITY_FILTERS, type Amenity, type CompetitivenessLevel } from "@/data/spaces";
+import { fetchBoats } from "@/data/api";
 import { Header } from "@/components/manacrib/Header";
 import { SpaceCard } from "@/components/manacrib/SpaceCard";
 
@@ -40,12 +35,19 @@ function Index() {
   const [amenities, setAmenities] = useState<Amenity[]>([]);
   const [query, setQuery] = useState("");
 
+  const { data: spaces = [], isLoading } = useQuery({
+    queryKey: ["boats"],
+    queryFn: fetchBoats,
+  });
+
+  const cities = useMemo(() => Array.from(new Set(spaces.map((s) => s.city))).sort(), [spaces]);
+
   const toggle = <T extends string>(arr: T[], value: T, set: (v: T[]) => void) => {
     set(arr.includes(value) ? arr.filter((x) => x !== value) : [...arr, value]);
   };
 
   const filtered = useMemo(() => {
-    return SPACES.filter((s) => {
+    return spaces.filter((s) => {
       if (city && s.city !== city) return false;
       const refPrice = s.priceUnit === "hora" ? s.pricePerHour : s.pricePerPlayer;
       if (refPrice > maxPrice) return false;
@@ -62,7 +64,7 @@ function Index() {
       }
       return true;
     });
-  }, [city, maxPrice, levels, amenities, query]);
+  }, [city, maxPrice, levels, amenities, query, spaces]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -78,10 +80,7 @@ function Index() {
             height={1280}
             className="h-full w-full object-cover opacity-60"
           />
-          <div
-            className="absolute inset-0"
-            style={{ backgroundImage: "var(--gradient-hero)" }}
-          />
+          <div className="absolute inset-0" style={{ backgroundImage: "var(--gradient-hero)" }} />
         </div>
 
         <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-20 sm:px-6 sm:pt-28 md:pb-24 md:pt-32">
@@ -96,8 +95,8 @@ function Index() {
             .
           </h1>
           <p className="mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
-            Lofts, salas privadas y garajes acondicionados en toda España.
-            Reserva por horas o por jugador y juega hasta el amanecer.
+            Lofts, salas privadas y garajes acondicionados en toda España. Reserva por horas o por
+            jugador y juega hasta el amanecer.
           </p>
 
           {/* Search bar */}
@@ -120,17 +119,17 @@ function Index() {
                   className="w-full bg-transparent text-sm outline-none"
                 >
                   <option value="">Toda España</option>
-                  {CITIES.map((c) => (
-                    <option key={c} value={c}>{c}</option>
+                  {cities.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
                   ))}
                 </select>
               </label>
               <label className="flex items-center gap-3 rounded-xl bg-background/60 px-3 py-3">
                 <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
                 <div className="flex w-full items-center gap-3 text-sm">
-                  <span className="whitespace-nowrap text-muted-foreground">
-                    Hasta {maxPrice}€
-                  </span>
+                  <span className="whitespace-nowrap text-muted-foreground">Hasta {maxPrice}€</span>
                   <input
                     type="range"
                     min={4}
@@ -190,9 +189,15 @@ function Index() {
           </div>
 
           <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-muted-foreground">
-            <span className="flex items-center gap-2"><Moon className="h-4 w-4 text-primary" /> Sesiones nocturnas</span>
-            <span className="flex items-center gap-2"><Users className="h-4 w-4 text-primary" /> Pods de 4 a 16 jugadores</span>
-            <span className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> Casual · Optimizado · cEDH</span>
+            <span className="flex items-center gap-2">
+              <Moon className="h-4 w-4 text-primary" /> Sesiones nocturnas
+            </span>
+            <span className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-primary" /> Pods de 4 a 16 jugadores
+            </span>
+            <span className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" /> Casual · Optimizado · cEDH
+            </span>
           </div>
         </div>
       </section>
@@ -201,17 +206,20 @@ function Index() {
       <section id="explorar" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24">
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
-            <h2 className="font-display text-2xl sm:text-3xl">
-              Espacios disponibles
-            </h2>
+            <h2 className="font-display text-2xl sm:text-3xl">Espacios disponibles</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              {filtered.length} {filtered.length === 1 ? "espacio" : "espacios"} encontrados
-              {city ? ` en ${city}` : " en toda España"}.
+              {isLoading
+                ? "Cargando..."
+                : `${filtered.length} ${filtered.length === 1 ? "espacio" : "espacios"} encontrados${city ? ` en ${city}` : " en toda España"}.`}
             </p>
           </div>
         </div>
 
-        {filtered.length === 0 ? (
+        {isLoading ? (
+          <div className="rounded-2xl border border-dashed border-border p-12 text-center text-muted-foreground">
+            Cargando espacios...
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border p-12 text-center text-muted-foreground">
             No hay espacios que coincidan con tus filtros. Prueba a ampliar la búsqueda.
           </div>
@@ -226,8 +234,8 @@ function Index() {
 
       <footer className="border-t border-border/60 py-10">
         <div className="mx-auto max-w-7xl px-4 text-center text-xs text-muted-foreground sm:px-6">
-          © {new Date().getFullYear()} ManaCrib · Hecho para la comunidad de Commander.
-          Magic: The Gathering™ es una marca de Wizards of the Coast. ManaCrib no está afiliado.
+          © {new Date().getFullYear()} ManaCrib · Hecho para la comunidad de Commander. Magic: The
+          Gathering™ es una marca de Wizards of the Coast. ManaCrib no está afiliado.
         </div>
       </footer>
     </div>

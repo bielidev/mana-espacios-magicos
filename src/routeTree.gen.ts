@@ -11,6 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SpaceIdRouteImport } from './routes/space.$id'
+import { Route as EspaciosNuevoRouteImport } from './routes/espacios/nuevo'
+import { Route as DashboardMisReservasRouteImport } from './routes/dashboard/mis-reservas'
+import { Route as DashboardMisEspaciosRouteImport } from './routes/dashboard/mis-espacios'
+import { Route as AuthRegisterRouteImport } from './routes/auth/register'
+import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as EspaciosIdEditarRouteImport } from './routes/espacios/$id/editar'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +28,110 @@ const SpaceIdRoute = SpaceIdRouteImport.update({
   path: '/space/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EspaciosNuevoRoute = EspaciosNuevoRouteImport.update({
+  id: '/espacios/nuevo',
+  path: '/espacios/nuevo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardMisReservasRoute = DashboardMisReservasRouteImport.update({
+  id: '/dashboard/mis-reservas',
+  path: '/dashboard/mis-reservas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardMisEspaciosRoute = DashboardMisEspaciosRouteImport.update({
+  id: '/dashboard/mis-espacios',
+  path: '/dashboard/mis-espacios',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRegisterRoute = AuthRegisterRouteImport.update({
+  id: '/auth/register',
+  path: '/auth/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EspaciosIdEditarRoute = EspaciosIdEditarRouteImport.update({
+  id: '/espacios/$id/editar',
+  path: '/espacios/$id/editar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/dashboard/mis-espacios': typeof DashboardMisEspaciosRoute
+  '/dashboard/mis-reservas': typeof DashboardMisReservasRoute
+  '/espacios/nuevo': typeof EspaciosNuevoRoute
   '/space/$id': typeof SpaceIdRoute
+  '/espacios/$id/editar': typeof EspaciosIdEditarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/dashboard/mis-espacios': typeof DashboardMisEspaciosRoute
+  '/dashboard/mis-reservas': typeof DashboardMisReservasRoute
+  '/espacios/nuevo': typeof EspaciosNuevoRoute
   '/space/$id': typeof SpaceIdRoute
+  '/espacios/$id/editar': typeof EspaciosIdEditarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/dashboard/mis-espacios': typeof DashboardMisEspaciosRoute
+  '/dashboard/mis-reservas': typeof DashboardMisReservasRoute
+  '/espacios/nuevo': typeof EspaciosNuevoRoute
   '/space/$id': typeof SpaceIdRoute
+  '/espacios/$id/editar': typeof EspaciosIdEditarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/space/$id'
+  fullPaths:
+    | '/'
+    | '/auth/login'
+    | '/auth/register'
+    | '/dashboard/mis-espacios'
+    | '/dashboard/mis-reservas'
+    | '/espacios/nuevo'
+    | '/space/$id'
+    | '/espacios/$id/editar'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/space/$id'
-  id: '__root__' | '/' | '/space/$id'
+  to:
+    | '/'
+    | '/auth/login'
+    | '/auth/register'
+    | '/dashboard/mis-espacios'
+    | '/dashboard/mis-reservas'
+    | '/espacios/nuevo'
+    | '/space/$id'
+    | '/espacios/$id/editar'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth/login'
+    | '/auth/register'
+    | '/dashboard/mis-espacios'
+    | '/dashboard/mis-reservas'
+    | '/espacios/nuevo'
+    | '/space/$id'
+    | '/espacios/$id/editar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthRegisterRoute: typeof AuthRegisterRoute
+  DashboardMisEspaciosRoute: typeof DashboardMisEspaciosRoute
+  DashboardMisReservasRoute: typeof DashboardMisReservasRoute
+  EspaciosNuevoRoute: typeof EspaciosNuevoRoute
   SpaceIdRoute: typeof SpaceIdRoute
+  EspaciosIdEditarRoute: typeof EspaciosIdEditarRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +150,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SpaceIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/espacios/nuevo': {
+      id: '/espacios/nuevo'
+      path: '/espacios/nuevo'
+      fullPath: '/espacios/nuevo'
+      preLoaderRoute: typeof EspaciosNuevoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/mis-reservas': {
+      id: '/dashboard/mis-reservas'
+      path: '/dashboard/mis-reservas'
+      fullPath: '/dashboard/mis-reservas'
+      preLoaderRoute: typeof DashboardMisReservasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/mis-espacios': {
+      id: '/dashboard/mis-espacios'
+      path: '/dashboard/mis-espacios'
+      fullPath: '/dashboard/mis-espacios'
+      preLoaderRoute: typeof DashboardMisEspaciosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/register': {
+      id: '/auth/register'
+      path: '/auth/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/espacios/$id/editar': {
+      id: '/espacios/$id/editar'
+      path: '/espacios/$id/editar'
+      fullPath: '/espacios/$id/editar'
+      preLoaderRoute: typeof EspaciosIdEditarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthRegisterRoute: AuthRegisterRoute,
+  DashboardMisEspaciosRoute: DashboardMisEspaciosRoute,
+  DashboardMisReservasRoute: DashboardMisReservasRoute,
+  EspaciosNuevoRoute: EspaciosNuevoRoute,
   SpaceIdRoute: SpaceIdRoute,
+  EspaciosIdEditarRoute: EspaciosIdEditarRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
