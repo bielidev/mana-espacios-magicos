@@ -77,14 +77,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
+      { title: "Mana Crib" },
       {
         name: "description",
         content:
           "Commander Spaces connects Magic: The Gathering players with hosts offering dedicated gaming spaces.",
       },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
+      { property: "og:title", content: "Mana Crib" },
       {
         property: "og:description",
         content:
@@ -93,7 +93,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
+      { name: "twitter:title", content: "Mana Crib" },
       {
         name: "twitter:description",
         content:
@@ -109,6 +109,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/01daa4b5-8871-4468-8997-071298932b0f/id-preview-b415ae04--3b2033da-4580-4110-b31c-53f1792273dd.lovable.app-1782741366986.png",
       },
+      { name: "description", content: "Encuentra una mesa para tu próxima partida de Commander" },
+      { property: "og:description", content: "Encuentra una mesa para tu próxima partida de Commander" },
+      { name: "twitter:description", content: "Encuentra una mesa para tu próxima partida de Commander" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3a43520d-36a2-42af-bcf0-584a462e9a6c/id-preview-bcf20a96--3b2033da-4580-4110-b31c-53f1792273dd.lovable.app-1782809367550.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3a43520d-36a2-42af-bcf0-584a462e9a6c/id-preview-bcf20a96--3b2033da-4580-4110-b31c-53f1792273dd.lovable.app-1782809367550.png" },
     ],
     links: [
       {
