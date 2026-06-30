@@ -20,7 +20,7 @@ export const Route = createFileRoute("/espacios/$id/editar")({
     return { space };
   },
   head: ({ loaderData }) => ({
-    meta: [{ title: `Editar ${loaderData.space.title} · ManaCrib` }],
+    meta: [{ title: `Editar ${loaderData?.space.title ?? "espacio"} · ManaCrib` }],
   }),
   component: EditSpacePage,
 });
